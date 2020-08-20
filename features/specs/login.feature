@@ -7,7 +7,7 @@ Funcionalidade: Fazer login
 
 Cenario: Fazer login com sucesso.
 Dado que eu tenho um usuario
-|email|fbraga@britech.global|
-|senha|  Mengao!@#123       |
+|email|   teste   |
+|senha|  mengao   |
 Quando eu faco login
 Entao eu verifico se estou logado
