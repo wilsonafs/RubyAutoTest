@@ -1,13 +1,30 @@
-# language: pt
+#language: pt
 
-Funcionalidade: Fazer login
+@testes_login
+Funcionalidade: Validar os cenários do fluxo de login
 
--Eu com professor.
--Eu quero fazer login na plataforma.
+Contexto: Acessar a área de login da plataforma 
+    Dado que o usuário acessa a área de login da plataforma 
 
-Cenario: Fazer login com sucesso.
-Dado que eu tenho um usuario
-|email|   teste   |
-|senha|  mengao   |
-Quando eu faco login
-Entao eu verifico se estou logado
+@login_sucesso
+Cenário: Login com sucesso
+    Quando preencher o "login" e "senha" com dados "válidos"
+    Então o login será realizado com sucesso
+
+@logout
+Cenário: Realizar logout da plataforma
+    Quando preencher o "login" e "senha" com dados "válidos"
+    Então o login será realizado com sucesso
+    E poderá fazer o logout da plataforma
+
+@login_invalido
+Esquema do Cenario: Login com dados inválidos
+    Quando preencher o <login> e <senha> com dados "inválidos"
+    Então será exibido um popup com uma mensagem de erro 
+
+Exemplos:
+    | login           | senha           |
+    | 'teste'         | 'invalida'      |
+    | 'invalido'      | 'invalido'      |
+    | ''              | 'loginEmBranco' |
+    | 'senhaembranco' | ''              |

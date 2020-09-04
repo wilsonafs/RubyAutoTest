@@ -1,50 +1,37 @@
-require 'capybara'
-require 'capybara/dsl'
-require 'capybara/rspec/matchers'
-require 'selenium-webdriver'
-require 'site_prism'
-require 'rspec'
-require_relative 'page_helper.rb'
-require_relative 'helper.rb'
+require "capybara/cucumber"
+require "selenium-webdriver"
+require "site_prism"
+require "byebug"
+require "faker"
+require "cpf_faker"
+require "dotenv"
+require "httparty"
+require "base64"
+require "httparty/request"
+require "httparty/response/headers"
+require "rspec"
+require "rspec/expectations"
 
-#brunao
-World(Capybara::DSL)
-World(Capybara::RSpecMatchers)
-World(Pages)
-
-HEADLESS = ENV['HEADLESS']
-ENVIRONMENT_TYPE = ENV['ENVIRONMENT_TYPE']
-
-CONFIG = YAML.load_file(File.dirname(__FILE__) +
-"/data/#{ENVIRONMENT_TYPE}.yml")
-
-
-Capybara.register_driver :selenium do |app|
-
-if HEADLESS.eql?('sem_headless')
-  Capybara::Selenium::Driver.new(
-    app,
-    browser: :chrome,
-    desired_capabilities: Selenium::WebDriver::Remote::Capabilities.chrome(
-      'chromeOptions' => { 'args' => ['--disable-infobars',
-                                      'window-size=1600,1024'] }
-    )
-  )
-elsif HEADLESS.eql?('com_headless')
-  Capybara::Selenium::Driver.new(
-    app,
-    browser: :chrome,
-    desired_capabilities: Selenium::WebDriver::Remote::Capabilities.chrome(
-      'chromeOptions' => { 'args' => ['headless', 'disable-gpu',
-                                      '--disable-infobars',
-                                      'window-size=1600,1024'] }
-    )
-  )
+if ENV["ENV"]
+  puts "Iniciando o teste no ambiente"
+  Dotenv.load("environment/.env." + ENV["ENV"], ".env")
+else
+  Dotenv.load(".env")
 end
+
+Capybara.register_driver :chrome_headless do |app|
+  args = %w[--enable-javascript no-sandbox window-size=1440,900 headless disable-gpu --disable-dev-shm-usage --remote-debugging-port=9222]
+
+  caps = Selenium::WebDriver::Remote::Capabilities.chrome(
+    "chromeOptions" => {
+      "args" => args,
+    },
+  )
+
+  Capybara::Selenium::Driver.new(app, browser: :chrome, desired_capabilities: caps)
 end
 
 Capybara.configure do |config|
-    config.default_driver = :selenium
-    config.default_max_wait_time = 10
-    config.app_host = CONFIG['url_home']
+  config.default_driver = (ENV["DRIVER"] || "selenium_chrome").to_sym
+  config.default_max_wait_time = 60
 end

@@ -1,15 +1,21 @@
-Dado("que eu tenho um usuario") do |table|
-  @email = table.rows_hash['email']
-  @senha = table.rows_hash['senha']
-  home.load
+Dado("que o usuário acessa a área de login da plataforma") do
+  @loginPage.load
 end
 
-Quando("eu faco login") do
- home.logar_usuario(@email, @senha)
+Quando("preencher o {string} e {string} com dados {string}") do |usuario, senha, status|
+  @loginPage.logar_usuario(status, usuario, senha)
 end
 
-Entao("eu verifico se estou logado") do
+Então("o login será realizado com sucesso") do
+  @initialPage.wait_until_botoesTopo_visible
+  @initialPage.wait_until_nomeUsuario_visible
+end
 
-  expect(page).to have_current_path('https://hub.cyrnel.com/', url: true)
+Então("será exibido um popup com uma mensagem de erro") do
+  expect(accept_alert).to eq("Login ou senha incorretos.")
+end
 
+Então("poderá fazer o logout da plataforma") do
+  @initialPage.btnSair.click
+  @loginPage.wait_until_areaLogin_visible
 end
